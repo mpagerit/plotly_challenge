@@ -1,7 +1,8 @@
 // verify the correct .js file is being referenced
-console.log("This is app.js");
+console.log("app.js is live!");
 
 // create a function to draw the bar graph
+// code taken from office hours with instructor
 function DrawBargraph(sampleID) {
     console.log(`DrawBargraph(${sampleID})`);
 
@@ -51,7 +52,7 @@ function DrawBubblechart(sampleID) {
         var otu_labels = result.otu_labels;
         var sample_values = result.sample_values;
 
-
+        
         var trace1 = {
             x: otu_ids,
             y: sample_values,
@@ -79,18 +80,21 @@ function DrawBubblechart(sampleID) {
     
 }
 
+// function for the demographic info panel
 function populateDemographicInfo(sampleID) {
     console.log(`Demographic info for ${sampleID}`);
 
     d3.json("samples.json").then((data) => {
-        
+        // get the metadata from the json for the id selected
         var metaData = data.metadata;
         var resultArray = metaData.filter(md => md.id == sampleID);
         var result = resultArray[0];
 
         var panel = d3.select(`#sample-metadata`);
+        // clear data from previous entries from the panel to avoid duplication
         panel.html("");
 
+        // print out the key and value of the metadata on separate rows
         Object.entries(result).forEach(([key, value]) => {
             var category = key;
             var information = value;
@@ -101,13 +105,76 @@ function populateDemographicInfo(sampleID) {
 
 }
 
-// create a function that will update the graph and the chart based on a new selection
+// create a guage function for belly button washing
+function washFrequencyGuage(sampleID) {
+    console.log(`Time to wash the belly button of ${sampleID}`);
+
+    // pull the wash frequency from the metadata
+    d3.json("samples.json").then((data) => {
+        
+        var metaData = data.metadata;
+        var resultArray = metaData.filter(md => md.id == sampleID);
+        var result = resultArray[0];
+
+        var washFrequency = result.wfreq;
+
+        var GuageData = [
+            {
+              type: "indicator",
+              mode: "gauge+number",
+              value: washFrequency,
+              title: { text: "Belly Button Washing Frequency", font: { size: 24 } },
+              subtitle: {text: "Scrubs per Week"},
+            //   delta: { reference: 400, increasing: { color: "RebeccaPurple" } },
+              gauge: {
+                axis: { range: [null, 9], tickwidth: 1, tickcolor: "black" },
+                bar: { color: "darkblue" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "gray",
+                steps: [
+                  { range: [0, 1]},
+                  { range: [1, 2]},
+                  { range: [2, 3]},
+                  { range: [3, 4]},
+                  { range: [4, 5]},
+                  { range: [5, 6]},
+                  { range: [6, 7]},
+                  { range: [7, 8]},
+                  { range: [8, 9]}
+                ],
+                threshold: {
+                  line: { color: "red", width: 4 },
+                  thickness: 0.75,
+                  value: 490
+                }
+              }
+            }
+          ];
+          
+          var guageLayout = {
+            width: 500,
+            height: 400,
+            margin: { t: 25, r: 25, l: 25, b: 25 },
+            // paper_bgcolor: "lavender",
+            // font: { color: "darkblue", family: "Arial" }
+          };
+          
+          Plotly.newPlot('gauge', GuageData, guageLayout);
+
+    });
+
+}
+
+// function to update all graphs and other information with new selection
+// code from office hours with instructor
 function optionChanged(newSampleID) {
     console.log(`User selected ${newSampleID}`);
 
     DrawBargraph(newSampleID);
     DrawBubblechart(newSampleID);
     populateDemographicInfo(newSampleID);
+    washFrequencyGuage(newSampleID);
 }
 
 function InitDashboard()
@@ -134,6 +201,7 @@ function InitDashboard()
         DrawBargraph(sampleID);
         DrawBubblechart(sampleID);
         populateDemographicInfo(sampleID);
+        washFrequencyGuage(sampleID);
     });
 }
 
