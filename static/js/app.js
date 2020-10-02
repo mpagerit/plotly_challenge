@@ -16,6 +16,7 @@ function DrawBargraph(sampleID) {
         var otu_labels = result.otu_labels;
         var sample_values = result.sample_values;
         
+        // code taken from office hours with instructor
         var yticks = otu_ids.slice(0, 10).map(otuId => `OTU ${otuId}`).reverse();
 
         var barData = {
@@ -143,11 +144,6 @@ function washFrequencyGuage(sampleID) {
                   { range: [7, 8]},
                   { range: [8, 9]}
                 ],
-                threshold: {
-                  line: { color: "red", width: 4 },
-                  thickness: 0.75,
-                  value: 490
-                }
               }
             }
           ];
@@ -156,8 +152,6 @@ function washFrequencyGuage(sampleID) {
             width: 500,
             height: 400,
             margin: { t: 25, r: 25, l: 25, b: 25 },
-            // paper_bgcolor: "lavender",
-            // font: { color: "darkblue", family: "Arial" }
           };
           
           Plotly.newPlot('gauge', GuageData, guageLayout);
