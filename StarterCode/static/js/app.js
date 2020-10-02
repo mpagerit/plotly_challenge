@@ -40,6 +40,43 @@ function DrawBargraph(sampleID) {
 // create a function to draw the bubble chart
 function DrawBubblechart(sampleID) {
     console.log(`DrawBubblechart(${sampleID})`);
+
+    d3.json("samples.json").then((data) => {
+        // reusing the same code to get otu_ids, otu_labels, and sample_values
+        var samples = data.samples;
+        var resultArray = samples.filter(s => s.id == sampleID);
+        var result = resultArray[0];
+
+        var otu_ids = result.otu_ids;
+        var otu_labels = result.otu_labels;
+        var sample_values = result.sample_values;
+
+
+        var trace1 = {
+            x: otu_ids,
+            y: sample_values,
+            text: otu_labels,
+            mode: 'markers',
+            marker: {
+              color: [0, 50, 100, 150, 200, 250, 300],
+              size: sample_values
+            }
+          };
+          
+          var sampleData = [trace1];
+          
+          var layout = {
+            title: 'Sample Sizes',
+            showlegend: false,
+            height: 600,
+            width: 1200
+          };
+          
+          Plotly.newPlot('bubble', sampleData, layout);
+
+    });
+    
+    
 }
 
 function populateDemographicInfo(sampleID) {
@@ -55,8 +92,9 @@ function populateDemographicInfo(sampleID) {
         panel.html("");
 
         Object.entries(result).forEach(([key, value]) => {
-            var textToShow = `Sample ID: ${sampleID}`;
-            panel.append("h6").text(textToShow);
+            var category = key;
+            var information = value;
+            panel.append("h6").text(`${category}: ${value}`);
         })
 
     });
